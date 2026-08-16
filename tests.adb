@@ -7,13 +7,13 @@ with Ada.Assertions; use Ada.Assertions;
 with Seam_Carving; use Seam_Carving;
 
 procedure Tests is
-   Img_3x3 : Image (1 .. 3, 1 .. 3) :=
+   Img_3x3 : constant Image (1 .. 3, 1 .. 3) :=
      (1 => (1 => (10, 10, 10), 2 => (20, 20, 20), 3 => (10, 10, 10)),
       2 => (1 => (90, 90, 90), 2 => (10, 10, 10), 3 => (90, 90, 90)),
       3 => (1 => (10, 10, 10), 2 => (20, 20, 20), 3 => (10, 10, 10)));
    
-   Img_1x3 : Image (1 .. 1, 1 .. 3) := (others => (others => (0, 0, 0)));
-   Img_3x1 : Image (1 .. 3, 1 .. 1) := (others => (others => (0, 0, 0)));
+   Img_1x3 : constant Image (1 .. 1, 1 .. 3) := (others => (others => (0, 0, 0)));
+   Img_3x1 : constant Image (1 .. 3, 1 .. 1) := (others => (others => (0, 0, 0)));
    
    S : Seam (1 .. 3);
    Img_Res : Image (1 .. 2, 1 .. 3);
@@ -31,7 +31,7 @@ procedure Tests is
       Put_Line ("     => PASS (Assumption of failure disproven)");
       Passed_Tests := Passed_Tests + 1;
    exception
-      when E : others =>
+      when others =>
          Put_Line ("     => FAIL: Exception raised or assertion failed");
    end Run_Test;
 
@@ -39,7 +39,6 @@ procedure Tests is
    procedure T1 is begin
       S := Find_Seam (Img_3x3, Vertical, Backward_Energy);
       Assert (S'Length = 3, "Seam length mismatch");
-      -- The middle column (X=2) has lowest energy in Img_3x3 setup
       Assert (S (1) = 2 and S (2) = 2 and S (3) = 2, "Failed to find optimal vertical backward seam");
    end T1;
 
@@ -68,7 +67,7 @@ procedure Tests is
    procedure T6 is begin
       S := (2, 2, 2);
       declare
-         Res_Horiz : Image := Remove_Seam (Img_3x3, S, Horizontal);
+         Res_Horiz : constant Image := Remove_Seam (Img_3x3, S, Horizontal);
       begin
          Assert (Res_Horiz'Length (1) = 3, "Width altered incorrectly");
          Assert (Res_Horiz'Length (2) = 2, "Height not reduced");
@@ -85,7 +84,7 @@ procedure Tests is
    procedure T8 is begin
       S := (2, 2, 2);
       declare
-         Ins_Horiz : Image := Insert_Seam (Img_3x3, S, Horizontal);
+         Ins_Horiz : constant Image := Insert_Seam (Img_3x3, S, Horizontal);
       begin
          Assert (Ins_Horiz'Length (1) = 3, "Width altered incorrectly");
          Assert (Ins_Horiz'Length (2) = 4, "Height not increased");
@@ -95,7 +94,7 @@ procedure Tests is
    procedure T9 is begin
       S := (1, 1, 1);
       declare
-         Res : Image := Remove_Seam (Img_3x3, S, Vertical);
+         Res : constant Image := Remove_Seam (Img_3x3, S, Vertical);
       begin
          Assert (Res (1, 1).R = 90, "Data integrity: right pixels not shifted properly");
       end;
@@ -104,7 +103,7 @@ procedure Tests is
    procedure T10 is begin
       S := (3, 3, 3);
       declare
-         Res : Image := Remove_Seam (Img_3x3, S, Vertical);
+         Res : constant Image := Remove_Seam (Img_3x3, S, Vertical);
       begin
          Assert (Res (1, 1).R = 10, "Data integrity: left pixels mutated incorrectly");
       end;
@@ -113,8 +112,9 @@ procedure Tests is
    procedure T11 is begin
       S := (1, 1, 1);
       declare
-         Res : Image := Remove_Seam (Img_1x3, S, Vertical);
+         Res : constant Image := Remove_Seam (Img_1x3, S, Vertical);
       begin
+         pragma Unreferenced (Res);
          Assert (False, "Should have raised Image_Too_Small");
       end;
    exception
@@ -124,8 +124,9 @@ procedure Tests is
    procedure T12 is begin
       S := (1, 1, 1);
       declare
-         Res : Image := Remove_Seam (Img_3x1, S, Horizontal);
+         Res : constant Image := Remove_Seam (Img_3x1, S, Horizontal);
       begin
+         pragma Unreferenced (Res);
          Assert (False, "Should have raised Image_Too_Small");
       end;
    exception
@@ -135,19 +136,16 @@ procedure Tests is
    procedure T13 is begin
       S := (2, 2, 2);
       declare
-         Res : Image := Insert_Seam (Img_3x3, S, Vertical);
+         Res : constant Image := Insert_Seam (Img_3x3, S, Vertical);
       begin
-         -- Checking if pixel is properly averaged: (10 + 90)/2 = 50 
-         -- S=2 means we duplicate index 2 and average with 3. 
-         -- In Img_3x3, row 1 is (10), (90), (10). Avg(90,10) = 50.
          Assert (Res (3, 1).R = 50, "Averaged inserted pixel is calculated incorrectly");
       end;
    end T13;
 
    procedure T14 is begin
       declare
-         Uniform : Image (1 .. 2, 1 .. 2) := (others => (others => (5, 5, 5)));
-         Test_S  : Seam := Find_Seam (Uniform, Vertical, Backward_Energy);
+         Uniform : constant Image (1 .. 2, 1 .. 2) := (others => (others => (5, 5, 5)));
+         Test_S  : constant Seam := Find_Seam (Uniform, Vertical, Backward_Energy);
       begin
          Assert (Test_S (1) = 1, "Uniform image should default to leftmost seam");
       end;
