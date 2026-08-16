@@ -13,8 +13,8 @@ package body Seam_Carving is
 
    --  Helper: Safely access pixel with edge mirroring
    function Get_Pixel (Img : Image; X, Y : Integer) return Pixel is
-      Safe_X : Positive := Positive'Max (Img'First (1), Integer'Min (Img'Last (1), X));
-      Safe_Y : Positive := Positive'Max (Img'First (2), Integer'Min (Img'Last (2), Y));
+      Safe_X : constant Positive := Positive'Max (Img'First (1), Integer'Min (Img'Last (1), X));
+      Safe_Y : constant Positive := Positive'Max (Img'First (2), Integer'Min (Img'Last (2), Y));
    begin
       return Img (Safe_X, Safe_Y);
    end Get_Pixel;
@@ -56,7 +56,7 @@ package body Seam_Carving is
       
       -- Costs for forward energy
       Cu, Cl, Cr : Integer;
-      Min_Prev, Cost : Integer;
+      Min_Prev : Integer;
    begin
       if Energy_Type = Backward_Energy then
          declare
